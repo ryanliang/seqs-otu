@@ -26,7 +26,7 @@ module Seqsotu
         when input == 'e'
           exit
         when is_i?(input)
-          begin          
+          begin
             process(files.merge({ otu_num: input.to_i }), initialized)
             puts 'output file is ready. Or type another otu number to search again:'
             initialized = true
@@ -37,7 +37,7 @@ module Seqsotu
         else
           puts 'Error: command option not valid.'
           print_help
-        end        
+        end
       end # while
     end # def
 
@@ -90,8 +90,7 @@ module Seqsotu
     end
 
     def is_i?(s)
-       # (s =~ /\A[-+]?[0-9]*\.?[0-9]+\Z/) ? true : false
-       (s =~ /\A[0-9]*\Z/) ? true : false
+      (s =~ /\A[0-9]*\Z/) ? true : false
     end
 
     # @return cells
