@@ -59,13 +59,11 @@ module Seqsotu
       out_file_path = opt[:out_file]
       otu_num       = opt[:otu_num]
 
-      otu_file = File.open(otu_file_path, "r")
+      otu_file          = File.open(otu_file_path, "r")
       otu_data_per_line = otu_data_by_num(otu_num, otu_file)
-      cells = cells_from(otu_data_per_line)
-
-      @seq_file_data = File.open(seq_file_path, "r").readlines unless initialized
-      
-      output_file = File.open(out_file_path, "w")
+      cells             = cells_from(otu_data_per_line)
+      @seq_file_data    = File.open(seq_file_path, "r").readlines unless initialized
+      output_file       = File.open(out_file_path, "w")
 
       cells.each do |cell|
         seq_name_ind = line_num_in_seq_file(cell.seq_id)[:seq_name_ind]
