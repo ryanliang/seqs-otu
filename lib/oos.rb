@@ -30,10 +30,10 @@ module OOS
 
     Dir.foreach(oos_dir) do |filename|
       file_path = oos_dir + File::SEPARATOR + filename
-      File.open(file_path, "r").each_with_index do |line, index|
-        case index
-        when 0 then comment = line
-        when 1 then header  = line
+      File.open(file_path, "r").each_with_index do |line, line_num|
+        case line_num
+        when COMMENT_LINE_NUM then comment = line
+        when HEADER_LINE_NUM  then header  = line
         else
           otu_occur = OtuOccurance.new(line, OTU_PREFIX)
           if master_summary[otu_occur.otu_num].nil?
