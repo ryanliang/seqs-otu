@@ -16,12 +16,8 @@ module OOS
     
     result = process(oos_dir)
     master_summary, comment, header = result[:summary], result[:comment], result[:header]
-   
-    if raw_flag
-      output_result_raw(comment, header, master_summary, out_file)
-    else
-      output_result(comment, header, master_summary, out_file)
-    end
+
+    output_result(comment, header, master_summary, out_file, raw_flag)
   end # def
 
   def process(oos_dir)
@@ -44,7 +40,7 @@ module OOS
         end
       end unless filename =~ /^\.+$/ # skip . and ..
     end # Dir
-    {summary: master_summary, comment: comment, header: header}
+    {summary: master_summary.values.sort, comment: comment, header: header}
   end
 
   def print_usage
@@ -58,34 +54,27 @@ module OOS
     header    = args[1]
     summary   = args[2]
     file_path = args[3]
+    raw_flag  = args[4]
+
     File.open(file_path, 'w') do |file|
       file.write(comment)
       file.write(header)
-      summary.each_pair do |otu_num, otu_occur|
-        unless otu_occur.all_value_less_than?(VALUE_LIMIT)
-          otu_occur.replace_value_if_less_than_limit(VALUE_LIMIT, 0)
+      summary.each do |otu_occur|
+        if raw_flag
           file.write(otu_occur.to_s)
+        else
+          unless otu_occur.all_value_less_than?(VALUE_LIMIT)
+            otu_occur.replace_value_if_less_than_limit(VALUE_LIMIT, 0)
+            file.write(otu_occur.to_s)
+          end
         end
       end
     end
-  end
-  
-  def output_result_raw(*args)
-    comment   = args[0]
-    header    = args[1]
-    summary   = args[2]
-    file_path = args[3]
-    File.open(file_path, 'w') do |file|
-      file.write(comment)
-      file.write(header)
-      summary.each_pair do |otu_num, otu_occur|
-        file.write(otu_occur.to_s)
-      end
-    end
-  end  
-
+  end 
 
   class OtuOccurance
+    include Comparable
+
     SEPARATOR = "\t"
     attr_reader \
       :raw_line_data, 
@@ -122,6 +111,10 @@ module OOS
       @acrued_summary.each_with_index do |value, index|
         @acrued_summary[index] = replacement if value < limit
       end unless all_value_less_than?(limit)
+    end
+
+    def <=>(other)
+      otu_num.to_s.to_i <=> other.otu_num.to_s.to_i
     end
 
     private
