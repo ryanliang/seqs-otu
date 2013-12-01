@@ -1,4 +1,3 @@
-require 'ruby-debug'
 module OOS
   COMMENT_LINE_NUM = 0
   HEADER_LINE_NUM  = 1
@@ -43,7 +42,7 @@ module OOS
             master_summary[otu_occur.otu_num].sum(otu_occur)
           end
         end
-      end unless filename =~ /^\.+$/
+      end unless filename =~ /^\.+$/ # skip . and ..
     end # Dir
     {summary: master_summary, comment: comment, header: header}
   end
