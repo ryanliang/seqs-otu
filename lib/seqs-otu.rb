@@ -77,7 +77,7 @@ module Seqsotu
 
     def otu_data_by_num(otu_num, file)
       file.each_line do |line|
-        return line if line =~ /^#{otu_num}/
+        return line if line =~ /^denovo#{otu_num}/
       end
     end
 
