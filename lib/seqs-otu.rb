@@ -9,11 +9,8 @@ module Seqsotu
         exit
       end
 
-      otu_file, seq_file, out_file = ARGV[0], ARGV[1], ARGV[2]
+      options = {otu_file: ARGV[0], seq_file: ARGV[1], out_file: ARGV[2]}
       ARGV.clear
-
-      files = {otu_file: otu_file, seq_file: seq_file, out_file: out_file}
-
       print_help
       
       initialized = false      
@@ -27,7 +24,7 @@ module Seqsotu
           exit
         when is_i?(input)
           begin
-            process(files.merge({ otu_num: input.to_i }), initialized)
+            process(options.merge({ otu_num: input.to_i }), initialized)
             puts 'output file is ready. Or type another otu number to search again:'
             initialized = true
           rescue Exception => e
