@@ -13,8 +13,7 @@ module Distance
     ARGV.clear
     
     result = process(in_dir)
-
-    # output_result(comment, header, master_summary, out_file, raw_flag)
+    output_result(out_file, result)
   end # def
 
   def process(in_dir)
@@ -22,20 +21,40 @@ module Distance
     Dir.foreach(in_dir) do |filename|
       file_path = in_dir + File::SEPARATOR + filename
       files.push DistanceFile.new(file_path) unless filename =~ /^\.+$/ # skip . and ..
-    end 
-    pp files.first.data
-    i = 0
+    end
+    
+    sample_file = files.first
+    row = Array.new(sample_file.data.first.data.count, 0)
+    file_sum = Array.new(sample_file.data.count){ row.dup }
+    
     files.each do |file|
-      file.data.each do |row|
-        # pp row
-        i += 1
-        exit if i == 10
+      file.data.each_with_index do |row, y|
+        row.data.each_with_index do |col, x|
+          file_sum[y][x] += file.value_at(y, x)
+        end
       end
     end
+
+    file_sum.each_with_index do |row, ind|
+      row.unshift(sample_file.data[ind].row_header)
+    end
+
+    header = sample_file.header.split(SEPARATOR).map { |e| e.strip }
+    file_sum.unshift(header)
+    
+    file_sum
   end
 
   def output_result(*args)
-    
+    output_file = args[0]
+    file_sum    = args[1]
+
+    File.open(output_file, 'w') do |file|
+      file_sum.each_with_index do |row, i|
+        file.write(row.join(SEPARATOR))
+        file.write("\n") unless i + 1 == file_sum.count
+      end
+    end
   end
 
   def print_usage
@@ -57,6 +76,10 @@ module Distance
         end
       end
     end # def
+
+    def value_at(y, x)
+      @data[y].data[x]
+    end
 
   end # class
 
